@@ -2,8 +2,8 @@
   "name": "to-do-application",
   "version": "1.0.0",
   "engines": {
-    "node": "0.12.x",
-    "npm": "2.5.x"
+    "node": "12.14.1",
+    "npm": "6.13.4"
   },
   "description": "",
   "main": "app.js",
