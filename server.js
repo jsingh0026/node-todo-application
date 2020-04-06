@@ -3,4 +3,4 @@ const app = require('./app');
 
 const server = http.createServer(app);
 
-server.listen(4000);
+server.listen(process.env.PORT || 3000);
