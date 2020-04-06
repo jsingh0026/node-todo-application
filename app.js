@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   });
   
 // mongo db connections
-mongoose.connect( process.env.mongoURI, 
+mongoose.connect( "mongodb+srv://admin:admin@cluster0-ru1lu.mongodb.net/test?retryWrites=true&w=majority", 
 {
     useNewUrlParser: true,
     useUnifiedTopology: true
