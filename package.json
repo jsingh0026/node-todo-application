@@ -1,6 +1,10 @@
 {
   "name": "to-do-application",
   "version": "1.0.0",
+  "engines": {
+    "node": "0.12.x",
+    "npm": "2.5.x"
+  },
   "description": "",
   "main": "app.js",
   "scripts": {
