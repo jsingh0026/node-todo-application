@@ -1,27 +1,14 @@
 const Tasks = require('../models/to-do-list');
+const customResponse = require('../middlewares/customResponse');
 
 exports.getTasks = (req, res, next) => {
     Tasks.find()
     .exec()
     .then( tasks => {
-        res.status(200).send({
-            message: "Get Method: Get all tasks",
-            success: true,
-            data: tasks.map( task =>{
-                return{
-                    id: task._id,
-                    task: task.task,
-                    status: task.status
-                }
-            })
-        });
+        res.send(customResponse('Get Tasks', true, tasks));
     })
     .catch( error => {
-            res.send({
-            message: "Get Method failed",
-            success: false,
-            error: error
-        })
+            res.send("Get method failed", false, error);
     })
 };
 
@@ -30,22 +17,10 @@ exports.addTask = (req, res, next) => {
     task.
     save()
     .then( task => {
-        res.send({
-            message: "Post Method: Add item",
-            success: true,
-            data: {
-                id: task._id,
-                task: task.task,
-                status: task.status
-            }
-        })
+        res.send(customResponse("Task added", true, task))
     })
     .catch( error => {
-        res.send({
-            message: "Post Method failed",
-            success: false,
-            error: error
-        })
+        res.send("Task not added", false, error)
     })
 };
 
@@ -57,19 +32,11 @@ exports.updateTask = (req, res, next) => {
         Tasks.findOne({ _id: id })
         .exec()
         .then( result => {
-            res.send({
-                message: "Updated Successfully",
-                success: true,
-                data: result
-            })
+            res.send(customResponse('updated', true, result))
         })
     )
     .catch(error => {
-        res.send({
-            message: "Updated Unsuccessfully",
-            success: false,
-            error: error
-        })
+        res.send(customResponse('not updated', false, error))
     })
 };
 
@@ -78,17 +45,9 @@ exports.deleteTask = (req, res, next) => {
     Tasks.deleteOne({ _id: id})
     .exec()
     .then( result => {
-        res.send({
-            message: "Deleted Successfully",
-            success: true,
-            data: result
-        });
+        res.send(customResponse('deleted', true, result));
     })
     .catch(error => {
-        res.send({
-            message: "Deleted unsuccessfully",
-            success: false,
-            error: error
-        });
+        res.send('not deleted', false, error);
     })
 };

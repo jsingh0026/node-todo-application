@@ -1,6 +1,7 @@
 
-const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken");
+const { validationResult } = require('express-validator');
+const getToken = require('../middlewares/config');
+const customResponse = require('../middlewares/customResponse');
 
 const Users = require('../models/users');
 
@@ -8,149 +9,66 @@ exports.getUsers = (req, res, next) => {
     Users.find()
     .exec()
     .then( users => {
-      res.send({
-        message: 'Get Method: employee data',
-        success: true,
-        data: users.map( user => {
-          return{
-          id: user._id,
-          email: user.email,
-          password: user.password
-        }
-        })
-    });
+      res.send(customResponse('Get Method: employee data', true, users ));
     })
     .catch( err => {
-      res.send(err);
+      res.send( customResponse('Get Method: employee data', false, err ));
     });
   };
 
   exports.userSignup = (req, res, next) => {
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.send( customResponse('Validation error', false, errors));
+      return;
+    }
+
     const user = new Users(req.body);
     user
       .save()
       .then(result => {
         console.log(result);
-        res.send({
-          message: "User created",
-          success: true, 
-          data: result
-        });
+        res.send(customResponse('signup', true, result));
       })
       .catch(err => {
-        console.log(err);
-        res.send({
-          error: err
-        });
+        res.send(customResponse('error', false, err));
       });
 };
 
 exports.login = (req, res, next) => {
+    
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      res.send( customResponse('Validation error', false, errors));
+      return;
+    }
     Users.findOne({ email: req.body.email })
     .exec()
     .then(user => {
-        if(user.length < 1){
-            return res.send({
-                message: "Auth failed",
-                success: false
-            })
-        }
-        bcrypt.compare(req.body.password, user.password, (err,result) => {
-            if(err) {
-                return res.send({
-                    message: "Auth failed",
-                    success: false
-                })
-            } 
-            if(result){
-                const token = jwt.sign(
-                    {
-                        email: user.email,
-                        userID: user._id
-                    },
-                    process.env.secretKey,
-                    {
-                        expiresIn: "1h"
-                    }
-                 );
-                return res.send({
-                    message: "Auth successful",
-                    success: true,
-                    data: {
-                        token: token,
-                        userDetails: {
-                            id: user._id,
-                            email: user.email
-                        }
-                    }
-                })    
-            }
-        }) 
+        user.comparePassword( req.body.password, (error, isMatch) => {
+          if(isMatch){
+            const token = getToken(user);
+            return res.send(customResponse("Auth successful", true, {token: token, data: user}))    
+          }
+          else {
+            return res.send( customResponse("Auth failed", false, err))
+          }
+        })
     })
     .catch(error => {
-      res.send({
-        message: "error",
-        success: false,
-        error:error
-      });
+      res.send(customResponse("user not found", false, error));
     })
 };
-
-// exports.login = (req, res, next) => {
-//     Users.findOne({ email: req.body.email })
-//     .exec()
-//     .then(user => {
-//         if(user){
-//             console.log(user);
-//             Users.comparePassword( user.password, (error, isMatch) => {
-//                 console.log(isMatch);
-//                 console.log(error);
-//             })
-//         }
-//         // if(user.length < 1){
-//         //     return res.send({
-//         //         message: "Auth failed",
-//         //         success: false
-//         //     })
-//         // }
-//         // bcrypt.compare(req.body.password, user.password, (err,result) => {
-//         //     if(err) {
-//         //         return res.send({
-//         //             message: "Auth failed",
-//         //             success: false
-//         //         })
-//         //     } 
-//         //     // if(result){
-//         //     //     const token = jwt.sign(
-//         //     //         {
-//         //     //             email: user.email,
-//         //     //             userID: user._id
-//         //     //         },
-//         //     //         process.env.secretKey,
-//         //     //         {
-//         //     //             expiresIn: "1h"
-//         //     //         }
-//         //     //      );
-//         //     //     return res.send({
-//         //     //         message: "Auth successful",
-//         //     //         success: true,
-//         //     //         data: token
-//         //     //     })    
-//         //     // }
-//         // }) 
-//     })
-// };
 
   exports.deleteUser = (req, res, next) => {
     const id = req.params.usersID;
     Users.remove({ _id: id})
     .exec()
     .then( result => {
-        res.json({
-          success: true,
-          result:result});
+        res.send(customResponse('user deleted', true, result));
     })
     .catch(err => {
-        res.json(err);
+        res.json(customResponse('error', false, err));
     })
   };

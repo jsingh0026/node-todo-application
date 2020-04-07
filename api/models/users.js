@@ -24,11 +24,10 @@ usersSchema.pre('save', function save(next) {
     });
   });
 
-//   usersSchema.methods.comparePassword = function comparePassword(pass, cb) {
-//       console.log("hello")
-//     bcrypt.compare(pass, this.password, (err, isMatch) => {
-//       cb(err, isMatch);
-//     });
-//   };
+  usersSchema.methods.comparePassword = function comparePassword(pass, cb) {
+      bcrypt.compare(pass, this.password, (err, isMatch) => {
+        cb(err, isMatch);
+      });
+  };
 
 module.exports = mongoose.model('Users', usersSchema);
