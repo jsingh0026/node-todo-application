@@ -24,16 +24,16 @@ Authentication : JWT
 4. Run app -> "npm start"
 5. Load "localhost:3000" in web browser/postman
 
-**API Endpoints
+**API Endpoints**
 
-**Users
+***Users***
 ```
 get: /users
 login: users/login
 signup: /users/signup
 delete: /users/:userID
 ```
-**To-do's (auth required)
+***To-do's (auth required)***
 ```
 get: /tasks
 post: /tasks
