@@ -22,4 +22,20 @@ Authentication : JWT
 2. Go to the project directory in command prompt
 3. Install dependencies -> "npm install"
 4. Run app -> "npm start"
-5. Load "localhost:3000" in web browser
+5. Load "localhost:3000" in web browser/postman
+
+**API Endpoints
+*Users
+```
+get: /users
+login: users/login
+signup: /users/signup
+delete: /users/:userID
+```
+*To-do's (auth required)
+```
+get: /tasks
+post: /tasks
+update: /tasks/:taskID
+delete: /tasks/:taskID
+```
